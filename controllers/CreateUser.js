@@ -122,8 +122,9 @@ const updateSingleUser = asyncHandler(
 const blockUser = asyncHandler(
     async function (req, res) {
         const { id } = req.params;
-        validateMongodbId(id);
+    
         try {
+            validateMongodbId(id);
             const user = await UserModel.findByIdAndUpdate(id, {
                 isBlocked: true
             }, { new: true })
