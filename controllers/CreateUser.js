@@ -1,6 +1,7 @@
 const { generateToken } = require("../config/jwtoken.js");
 const UserModel = require("../models/UserModel.js")
-const asyncHandler = require("express-async-handler")
+const asyncHandler = require("express-async-handler");
+const validateMongodbId = require("../utils/validateMongodbid.js");
 
 
 
@@ -63,7 +64,8 @@ const getSingleUser = asyncHandler(
         try {
 
             const { id } = req.params
-            //  const user = await UserModel.findOne({_id : id})
+            validateMongodbId(id);
+          
             const user = await UserModel.findById(id)
 
             if (user) { res.json(user) }
@@ -97,6 +99,7 @@ const updateSingleUser = asyncHandler(
 
             // const {id} = req.params
             const { _id } = req.user
+            validateMongodbId(_id);
 
             const user = await UserModel.findByIdAndUpdate(_id, {
                 firstname: req?.body?.firstname,
@@ -119,7 +122,7 @@ const updateSingleUser = asyncHandler(
 const blockUser = asyncHandler(
     async function (req, res) {
         const { id } = req.params;
-
+        validateMongodbId(id);
         try {
             const user = await UserModel.findByIdAndUpdate(id, {
                 isBlocked: true
@@ -138,7 +141,7 @@ const blockUser = asyncHandler(
 const unblockUser = asyncHandler(
     async function (req, res) {
         const { id } = req.params;
-
+        validateMongodbId(id);
         try {
             const user = await UserModel.findByIdAndUpdate(id, {
                 isBlocked: false
