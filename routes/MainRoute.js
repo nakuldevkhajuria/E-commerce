@@ -16,8 +16,8 @@ router.put("/edit-user",AuthMiddleware, updateSingleUser)
 
 
 
-router.get("/block/:id" ,AuthMiddleware,isAdmin, blockUser)
-router.get("/unblock/:id",AuthMiddleware,isAdmin, unblockUser)
+router.put("/block/:id" ,AuthMiddleware,isAdmin, blockUser)
+router.put("/unblock/:id",AuthMiddleware,isAdmin, unblockUser)
 
 //this routes means
 //1. only admin can block or unblock any user
