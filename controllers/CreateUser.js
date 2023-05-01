@@ -119,29 +119,41 @@ const updateSingleUser = asyncHandler(
 const blockUser = asyncHandler(
     async function (req, res) {
         const { id } = req.params;
-        const user = await UserModel.findOne({_id:id});
-        if (user.isBlocked ===false) {
+
+        try {
             const user = await UserModel.findByIdAndUpdate(id, {
                 isBlocked: true
             }, { new: true })
             res.json(user)
+
         }
-        else{res.json("hello this is already block")}
+        catch (error) {
+            throw new Error(error)
+        }
+
     }
+
+
 )
 const unblockUser = asyncHandler(
     async function (req, res) {
         const { id } = req.params;
-        const user = await UserModel.findOne({_id:id});
-        if (user.isBlocked ===true) {
+
+        try {
             const user = await UserModel.findByIdAndUpdate(id, {
                 isBlocked: false
             }, { new: true })
             res.json(user)
         }
-        else{res.json("hello this is already unblock")}
+        catch (error) {
+
+            throw new Error(error)
+        }
+
     }
+
+
 )
 
-module.exports = { createUser, loginUser, getAllUsers, getSingleUser, deleteSingleUser, updateSingleUser, blockUser,unblockUser }
+module.exports = { createUser, loginUser, getAllUsers, getSingleUser, deleteSingleUser, updateSingleUser, blockUser, unblockUser }
 
