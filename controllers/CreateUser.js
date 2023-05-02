@@ -2,6 +2,7 @@ const { generateToken } = require("../config/jwtoken.js");
 const UserModel = require("../models/UserModel.js")
 const asyncHandler = require("express-async-handler");
 const validateMongodbId = require("../utils/validateMongodbid.js");
+const { generateRefreshToken } = require("../config/refreshToken.js");
 
 
 
@@ -26,6 +27,17 @@ const loginUser = asyncHandler(
         const findUser = await UserModel.findOne({ email })
 
         if (findUser && (await findUser.isPasswordMatched(password))) {
+
+            const refreshToken = await generateRefreshToken(findUser?._id)
+            const updateUser = await UserModel.findByIdAndUpdate(findUser?._id,
+                { refreshToken: refreshToken },
+                { new: true })
+                
+            res.cookie('refreshToken', refreshToken, {
+                httpOnly: true,
+                maxAge: 72 * 60 * 60 * 1000
+            })
+
             res.json({
                 _id: findUser._id,
                 firstname: findUser.firstname,
@@ -65,7 +77,7 @@ const getSingleUser = asyncHandler(
 
             const { id } = req.params
             validateMongodbId(id);
-          
+
             const user = await UserModel.findById(id)
 
             if (user) { res.json(user) }
@@ -122,7 +134,7 @@ const updateSingleUser = asyncHandler(
 const blockUser = asyncHandler(
     async function (req, res) {
         const { id } = req.params;
-    
+
         try {
             validateMongodbId(id);
             const user = await UserModel.findByIdAndUpdate(id, {
