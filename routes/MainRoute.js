@@ -8,7 +8,7 @@ router.post("/register", createUser);
 router.post("/login", loginUser);
 router.get('/getallusers', getAllUsers)
 
-router.get("/:id", AuthMiddleware,isAdmin, getSingleUser)
+router.get("/:id",getSingleUser)
 
 router.delete("/delete/:id", deleteSingleUser)
 router.put("/edit-user",AuthMiddleware, updateSingleUser)

@@ -77,10 +77,12 @@ const getSingleUser = asyncHandler(
 
             const { id } = req.params
             validateMongodbId(id);
+            //validating using Mongodb isValid method
+            //checks if the id is hexadecimal 24 characters
 
             const user = await UserModel.findById(id)
 
-            if (user) { res.json(user) }
+            if (user) { res.json(user); }
             else { res.json(message = 'This id is not present in the database') }
 
         } catch (error) {
