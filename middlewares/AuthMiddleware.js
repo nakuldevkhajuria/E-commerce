@@ -7,16 +7,20 @@ const UserModel = require("../models/UserModel");
 const AuthMiddleware = asyncHandler(async (req, res, next) => {
     try {
         let token;
-        if (req.headers.authorization.startsWith("Bearer")) {
+        //token is given manually, and assigned to the variable token
+        if (req?.headers?.authorization?.startsWith("Bearer")) {
             token = req.headers.authorization.split(' ')[1];
             const decoder = jwt.verify(token, process.env.JWT_SECRET)
+            //till here we are getting the id of the user, as decoder.   console.log(decoder)
+         
             if (decoder) {
                 const user = await UserModel.findById(decoder?.id)
-            
+
                 req.userData = user;
-                //req.user is the property and assigning it to the user object
+                //req.userData is the property and assigning it to the user object
+                //where userData will be the variable holding the value
                 //and using it in updating
-                
+
                 next()
             }
             else { res.json('the token is wrong') }
@@ -34,6 +38,7 @@ const AuthMiddleware = asyncHandler(async (req, res, next) => {
 
 const isAdmin = asyncHandler(async function (req, res, next) {
     const { email } = req.userData;
+    //req.userData is the user data coming from the AuthMiddleware
     const user = await UserModel.findOne({ email: email })
     if (user.role !== "admin") {
         throw new Error('you are not an admin')
