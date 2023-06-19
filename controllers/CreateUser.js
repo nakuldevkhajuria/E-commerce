@@ -28,11 +28,11 @@ const loginUser = asyncHandler(
 
         if (findUser && (await findUser.isPasswordMatched(password))) {
 
-            const refreshToken =  generateRefreshToken(findUser?._id)
+            const refreshToken = generateRefreshToken(findUser?._id)
             const updateUser = await UserModel.findByIdAndUpdate(findUser?._id,
                 { refreshToken: refreshToken },
                 { new: true })
-       
+
             res.cookie('refreshToken', refreshToken, {
                 httpOnly: true,
                 maxAge: 72 * 60 * 60 * 1000
@@ -53,23 +53,27 @@ const loginUser = asyncHandler(
 
     }
 )
+//refresh the cookie token
+const handleRefreshToken = asyncHandler(async (req, res) => {
+    const cookie = req.cookies;
+    if (!cookie?.refreshToken) { throw new Error('Refresh token is not present') };
+    const refreshToken = cookie.refreshToken
 
-const handleRefreshToken = asyncHandler(async(req,res)=>{
-const cookie = req.cookies;
-if(!cookie?.refreshToken){throw new Error('Refresh token is not present')};
-const refreshToken = cookie.refreshToken
+    const user = await UserModel.findOne({ refreshToken })
+    if (!user) { throw new Error('No refresh token is present in the database') }
+    jwt.verify(refreshToken, process.env.JWT_SECRET, (err, decoder) => {
+        if (err) { throw new Error("its not verified") }
+        const accessToken = generateToken(decoder.id)
+        res.json({ accessToken })
+    })
 
-const user = await UserModel.findOne({refreshToken})
-if(!user){throw new Error('No refresh token is present in the database')}
-jwt.verify(refreshToken,process.env.JWT_SECRET,(err,decoder)=>{
-    if(err){throw new Error("its not verified")}
-    const accessToken = generateToken(decoder.id)
-    res.json({accessToken})
+
 })
 
-
-})
-
+//logout
+const handleLogout =()=>{
+    
+}
 //get all users
 const getAllUsers = asyncHandler(
     async (req, res) => {
@@ -126,11 +130,11 @@ const deleteSingleUser = asyncHandler(
 const updateSingleUser = asyncHandler(
     async function (req, res) {
 
-// console.log(req.userData)
-         // const {id} = req.params
-            // cause now we can get the id from the req.user, instead giving it manually
-            const { _id } = req.userData
-            validateMongodbId(_id);
+        // console.log(req.userData)
+        // const {id} = req.params
+        // cause now we can get the id from the req.user, instead giving it manually
+        const { _id } = req.userData
+        validateMongodbId(_id);
         try {
 
             const user = await UserModel.findByIdAndUpdate(_id, {
@@ -191,5 +195,5 @@ const unblockUser = asyncHandler(
 
 )
 
-module.exports = { createUser, loginUser, getAllUsers, getSingleUser, deleteSingleUser, updateSingleUser, blockUser, unblockUser , handleRefreshToken }
+module.exports = { createUser, loginUser, getAllUsers, getSingleUser, deleteSingleUser, updateSingleUser, blockUser, unblockUser, handleRefreshToken }
 
