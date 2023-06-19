@@ -32,7 +32,7 @@ const loginUser = asyncHandler(
             const updateUser = await UserModel.findByIdAndUpdate(findUser?._id,
                 { refreshToken: refreshToken },
                 { new: true })
-                
+       
             res.cookie('refreshToken', refreshToken, {
                 httpOnly: true,
                 maxAge: 72 * 60 * 60 * 1000
@@ -53,6 +53,10 @@ const loginUser = asyncHandler(
 
     }
 )
+
+const handleRefreshToken = asyncHandler(async(req,res)=>{
+
+})
 
 //get all users
 const getAllUsers = asyncHandler(
