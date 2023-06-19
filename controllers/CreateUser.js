@@ -3,7 +3,7 @@ const UserModel = require("../models/UserModel.js")
 const asyncHandler = require("express-async-handler");
 const validateMongodbId = require("../utils/validateMongodbid.js");
 const { generateRefreshToken } = require("../config/refreshToken.js");
-
+const jwt = require("jsonwebtoken")
 
 
 const createUser = asyncHandler(async (req, res) => {
@@ -28,7 +28,7 @@ const loginUser = asyncHandler(
 
         if (findUser && (await findUser.isPasswordMatched(password))) {
 
-            const refreshToken = await generateRefreshToken(findUser?._id)
+            const refreshToken =  generateRefreshToken(findUser?._id)
             const updateUser = await UserModel.findByIdAndUpdate(findUser?._id,
                 { refreshToken: refreshToken },
                 { new: true })
@@ -55,6 +55,18 @@ const loginUser = asyncHandler(
 )
 
 const handleRefreshToken = asyncHandler(async(req,res)=>{
+const cookie = req.cookies;
+if(!cookie?.refreshToken){throw new Error('Refresh token is not present')};
+const refreshToken = cookie.refreshToken
+
+const user = await UserModel.findOne({refreshToken})
+if(!user){throw new Error('No refresh token is present in the database')}
+jwt.verify(refreshToken,process.env.JWT_SECRET,(err,decoder)=>{
+    if(err){throw new Error("its not verified")}
+    const accessToken = generateToken(decoder.id)
+    res.json({accessToken})
+})
+
 
 })
 
@@ -179,5 +191,5 @@ const unblockUser = asyncHandler(
 
 )
 
-module.exports = { createUser, loginUser, getAllUsers, getSingleUser, deleteSingleUser, updateSingleUser, blockUser, unblockUser }
+module.exports = { createUser, loginUser, getAllUsers, getSingleUser, deleteSingleUser, updateSingleUser, blockUser, unblockUser , handleRefreshToken }
 
