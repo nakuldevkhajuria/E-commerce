@@ -109,11 +109,13 @@ const deleteSingleUser = asyncHandler(
 )
 const updateSingleUser = asyncHandler(
     async function (req, res) {
-        try {
 
-            // const {id} = req.params
-            const { _id } = req.user
+// console.log(req.userData)
+         // const {id} = req.params
+            // cause now we can get the id from the req.user, instead giving it manually
+            const { _id } = req.userData
             validateMongodbId(_id);
+        try {
 
             const user = await UserModel.findByIdAndUpdate(_id, {
                 firstname: req?.body?.firstname,
