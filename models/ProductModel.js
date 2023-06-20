@@ -32,11 +32,13 @@ var productSchema = new mongoose.Schema({
     },
     quantity:{
         type:Number,
-        sold:{
+        required:true,
+    },
+    sold:{
             type:Number,
             default:0,
         }    
-    },
+    ,
     color:{
         type:String,
         enum:["red","orange","purple"],
