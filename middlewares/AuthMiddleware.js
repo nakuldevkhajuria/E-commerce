@@ -17,7 +17,7 @@ const AuthMiddleware = asyncHandler(async (req, res, next) => {
                 const user = await UserModel.findById(decoder?.id)
 
                 req.userData = user;
-                //req.userData is the property and assigning it to the user object
+                //req.userData is the property and assigning  the user object values to it
                 //where userData will be the variable holding the value
                 //and using it in updating
 
@@ -38,6 +38,7 @@ const AuthMiddleware = asyncHandler(async (req, res, next) => {
 
 const isAdmin = asyncHandler(async function (req, res, next) {
     const { email } = req.userData;
+
     //req.userData is the user data coming from the AuthMiddleware
     const user = await UserModel.findOne({ email: email })
     if (user.role !== "admin") {

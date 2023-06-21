@@ -28,7 +28,7 @@ var productSchema = new mongoose.Schema({
     },
     brand:{
         type:String,
-        enum:["Apple","Samsung","Google"]
+        enum:["Apple","Samsung","Google","Lenovo"]
     },
     quantity:{
         type:Number,
@@ -37,6 +37,8 @@ var productSchema = new mongoose.Schema({
     sold:{
             type:Number,
             default:0,
+            select:false,
+            //select will hide the sold from the user
         }    
     ,
     color:{
