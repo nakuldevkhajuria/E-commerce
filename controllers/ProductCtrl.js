@@ -65,8 +65,11 @@ const getAProduct = asyncHandler(async(req,res)=>{
 const getAllProduct = asyncHandler(async(req,res)=>{
     // console.log(req.query)
     try {
-
-        const getAllProduct = await ProductModel.find(req.query)
+        const queryObject = {...req.query}
+        console.log(queryObject)
+        const getAllProduct = await ProductModel.where("color").equals(
+            req.query.color
+        )
         res.json({getAllProduct})
     } 
     catch (error) {
